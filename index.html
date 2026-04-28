@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sensor Dashboard</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+    body {
+    font-family: Arial;
+    margin: 20px;
+    background-color: #f4f7fb; /* light technical grey-blue */
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    background-color: #d9e6f2;  /* light academic blue */
+    padding: 10px;
+    border-radius: 6px;
+}
+
+.panel-buttons {
+    margin-top: 10px;
+    display: grid;
+    grid-template-columns: 0.45fr 1fr 1fr;
+    column-gap: 10px;
+    row-gap: 4px;   /* 🔥 reduce from 10px → 4px */
+    align-items: center;
+    width: 100%;
+}
+
+.title, .subtitle {
+    color: #1f2d3a;   /* dark text for contrast */
+}
+
+.btn-header {
+    font-weight: bold;
+    text-align: center;
+    padding: 0;        /* 🔥 remove vertical padding */
+    margin: 0;         /* 🔥 remove extra gap */
+    line-height: 1;    /* 🔥 tighter text */
+}
+
+.header img {
+            height: 60px;
+        }
+
+.title-container {
+            flex-grow: 1;
+            text-align: center;
+        }
+
+.title {
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+.subtitle {
+            font-size: 25px;   /* same size as title */
+            font-weight: 500; /* make it bold */
+            margin-top: 3px;
+        }
+
+.container {
+            margin-top: 20px;
+        }
+
+        /* SENSOR SECTION */
+.sensor-container {
+    display: flex;
+    justify-content: center;
+    gap: 40px;              /* space between panels */
+    margin-top: 25px;
+    align-items: flex-start;
+}
+
+.unit {
+    text-align: center;
+    font-size: 13px;
+    margin-top: -6px; /* pulls closer to header */
+}
+
+.panel-buttons {
+    grid-template-columns: 120px 140px 140px;
+    justify-content: center;
+}
+
+.sensor-box {
+    width: 40%;   /* control panel size */
+    
+    padding: 12px 14px;
+    text-align: center;
+    background-color: #ffffff;
+
+    border: 2px solid #2c3e50;
+    border-radius: 4px;
+    box-shadow: none;
+    
+}
+
+.btn-box {
+    width: 140px;
+    height: 42px;
+
+    display: flex;              /* 🔥 KEY FIX */
+    align-items: center;        /* vertical center */
+    justify-content: center;    /* horizontal center */
+
+    text-align: center;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    background-color: #f4f7fb;
+
+    border: 2px solid #2c3e50;
+    border-radius: 3px;
+
+    box-sizing: border-box;
+}
+
+input.btn-box {
+    display: flex;              /* match div */
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;                 /* remove default padding */
+    text-align: center;
+
+    line-height: normal;
+}
+
+.panel-buttons {
+    align-items: center;   /* 🔥 ensures row alignment */
+}
+
+.panel-buttons > * {
+    height: 34px;
+}
+
+.sensor-title {
+    display: inline-block;
+
+    font-size: 22px;
+    font-weight: 700;
+
+    padding: 6px 14px;
+    margin-bottom: 14px;
+
+    border: 2px solid #2c3e50;
+    border-radius: 6px;
+
+    background-color: #f4f7fb;
+}
+
+        /* BUTTONS INSIDE EACH PANEL */
+.panel-buttons {
+    margin-top: 10px;
+    display: grid;
+    grid-template-columns: 0.45fr 1fr 1fr;
+    column-gap: 10px;
+    row-gap: 4px;
+    align-items: center;
+    width: 100%;
+}
+
+/* Psi / Temp column → slight center */
+.panel-buttons .btn-box:not(input) {
+    justify-self: center;
+}
+
+.panel-buttons input.btn-box {
+    justify-self: center;   /* center them perfectly */
+    width: 85%;
+}
+
+.panel-buttons div.btn-box {
+    justify-self: center;
+    width: 85%;
+}
+
+.panel-buttons button {
+    width: 110px;
+    height: 32px;
+    font-size: 11px;
+    margin: 0;
+}
+
+.sensor-label {
+    justify-self: end;      /* push label toward Volt */
+    padding-right: 6px;
+    font-weight: bold;
+}
+
+.output-header {
+    grid-column: 2 / 4; /* spans Volt + Psi columns */
+    text-align: center;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.btn-header {
+    font-weight: bold;
+    text-align: center;
+    padding: 2px 0;
+
+    width: 100%;
+}
+
+        /* TOP CONTROL BUTTONS */
+.top-buttons {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+button {
+    width: 50px;
+    height: 35px;
+    font-size: 11px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+.top-buttons button {
+    width: 90px;      /* bigger width */
+    height: 45px;     /* taller button */
+    font-size: 14px;  /* bigger text */
+    margin: 5px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.start-btn {
+    background-color: #28a745;
+}
+
+.stop-btn {
+    background-color: #dc3545;
+}
+
+.footer {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    margin-top: 40px;
+    padding: 14px;
+
+    font-size: 16px;
+    font-weight: 500;
+
+    color: #1f2d3a;
+    background: #dfe9f3;
+}
+
+/* Center text */
+.footer-center {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+}
+
+/* Right side horizontal */
+.footer-right {
+    display: flex;
+    gap: 20px; /* space between contact & website */
+    font-size: 14px;
+}
+
+.footer-left {
+    text-align: left;
+}
+
+.footer-icon {
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.footer-icon:hover {
+    transform: scale(1.2);
+}
+
+.main-title {
+    text-align: center;
+    font-size: 25px;
+    font-weight: 600;
+    margin-top: 35px;   /* increased from 10px */
+}
+
+.sub-main {
+    text-align: center;
+    font-size: 18px;
+    margin-top: 2px;
+    color: #444;
+    font-weight: 500;
+}
+
+        h1 {
+    text-align: center;
+}
+
+.sensor-title {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 10px; /* increased gap */
+}
+
+#pressure, #temperature {
+    margin-bottom: 18px; /* space below sensor reading */
+    font-size: 18px;
+}
+
+.panel-buttons div.btn-box {
+    justify-self: center;
+}
+
+.btn-box {
+    width: 75%;
+    height: 42px;
+
+    text-align: center;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    background-color: #f4f7fb;
+
+    border: 2px solid #2c3e50;
+    border-radius: 3px;
+
+    box-sizing: border-box;
+}
+
+/* Make input behave exactly like div */
+input.btn-box {
+    padding: 0;
+    margin: 0;
+}
+
+.connection-box {
+    position: absolute;
+
+    top: 160px;
+    right: 20px;
+
+    display: flex;
+    flex-direction: column;   /* 🔥 stack vertically */
+    align-items: flex-start;
+    gap: 10px;
+
+    background: #ffffff;
+    padding: 10px;
+
+    border: 2px solid #2c3e50;
+    border-radius: 6px;
+
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.connection-row label {
+    font-size: 15px;   /* increase label text */
+}
+
+.connection-box select {
+    font-size: 14px;   /* increase dropdown text */
+}
+
+.connection-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.connection-box input {
+    width: 80px;
+    height: 28px;
+    font-size: 12px;
+    padding: 2px 5px;
+}
+
+.connection-box button {
+    height: 30px;
+    width: 90px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.export-footer {
+    display: flex;
+    justify-content: center;   /* center horizontally */
+    margin-top: 20px;
+    margin-bottom: 10px;       /* tight gap above PASF */
+}
+
+.export-footer button {
+    width: 140px;
+    height: 40px;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    border: 2px solid #2c3e50;
+    border-radius: 5px;
+
+    background-color: #f4f7fb;
+    cursor: pointer;
+}
+
+/* Increase font size for unit labels (Volt, Psi, °C) */
+.panel-buttons .btn-header:nth-child(5),
+.panel-buttons .btn-header:nth-child(6) {
+    font-size: 15px;   /* adjust if you want bigger */
+}
+
+/* Increase font size for panel values (Volt, Psi, °C outputs) */
+.panel-buttons .btn-box {
+    font-size: 14px;
+}
+
+button.active-btn {
+    border: 3px solid #000;
+    box-shadow: 0 0 6px rgba(0,0,0,0.4);
+    transform: scale(1.05);
+}
+
+/* Make ONLY sensor checkboxes bigger */
+input[type="checkbox"] {
+    transform: scale(1.9);
+    margin-right: 14px;
+}
+
+.connection-box button {
+    background-color: #90ee90; /* light green */
+    border: 2px solid #2c3e50;
+    color: #1f2d3a;
+    font-weight: 600;
+    align-self: center;
+}
+
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <div class="header">
+        <img src="images/cense-logo.png">
+
+        <div class="title-container">
+            <div class="title">Centre for Nano Science and Engineering</div>
+            <div class="subtitle">Indian Institute of Science</div>
+            <div class="subtitle">Bangalore, 560012</div>
+        </div>
+
+        <img src="images/IISc_Master.png">
+    </div>
+
+<!-- CONNECTION SETTINGS (TOP RIGHT) -->
+<div class="connection-box">
+
+    <div style="display: flex; gap: 10px; align-items: flex-start;">
+
+        <!-- LEFT: CONNECT BUTTON -->
+        <button class="connect-btn" onclick="connectDevice()">
+    CONNECT
+</button>
+
+        <!-- RIGHT: INPUTS (STACKED) -->
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+
+            <div class="connection-row">
+                <label>COM Port:</label>
+                <select id="comPort">
+                    <option value="COM3">COM3</option>
+                    <option value="COM4">COM4</option>
+                    <option value="COM5">COM5</option>
+                    <option value="COM6" selected>COM6</option>
+                </select>
+            </div>
+
+            <div class="connection-row">
+                <label>Baud:</label>
+                <select id="baudRate">
+                    <option value="9600">9600</option>
+                    <option value="115200">115200</option>
+                </select>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+    <!-- MAIN CONTENT -->
+    <div class="container">
+
+        <div class="main-title">GTRE RAKE Sensor Assembly</div>
+        <div class="sub-main">Realtime Monitoring</div>
+        
+
+        <!-- SENSOR DISPLAY -->
+        <div class="sensor-container">
+
+            <!-- LEFT PANEL -->
+            <div class="sensor-box">
+                <div class="sensor-title">Pressure Sensor</div>
+                <p id="pressure"></p>
+
+                <div class="panel-buttons">
+    <!-- OUTPUT ROW -->
+     
+<div class="btn-header"></div>
+<div class="btn-header">Output Voltage</div>
+<div class="btn-header">Pressure</div>
+
+<div></div>
+<div class="btn-header">(Volt)</div>
+<div class="btn-header">(Psi)</div>
+
+    <!-- SENSOR ROWS -->
+<div class="sensor-label">Sensor 1</div>
+<input type="text" readonly class="btn-box" id="p1_volt" oninput="updatePressure(1)">
+<div class="btn-box" id="p1_psi"></div>
+
+<div class="sensor-label">Sensor 2</div>
+<input type="text" readonly class="btn-box" id="p2_volt" oninput="updatePressure(2)">
+<div class="btn-box" id="p2_psi"></div>
+
+<div class="sensor-label">Sensor 3</div>
+<input type="text" readonly class="btn-box" id="p3_volt" oninput="updatePressure(3)">
+<div class="btn-box" id="p3_psi"></div>
+
+<div class="sensor-label">Sensor 4</div>
+<input type="text" readonly class="btn-box" id="p4_volt" oninput="updatePressure(4)">
+<div class="btn-box" id="p4_psi"></div>
+
+<div class="sensor-label">Sensor 5</div>
+<input type="text" readonly class="btn-box" id="p5_volt" oninput="updatePressure(5)">
+<div class="btn-box" id="p5_psi"></div>
+
+</div>
+            </div>
+
+            <!-- RIGHT PANEL -->
+            <div class="sensor-box">
+                <div class="sensor-title">Temperature Sensor</div>
+                <p id="temperature"></p>
+
+                <div class="panel-buttons">
+
+    <!-- HEADER ROW -->
+ <div class="btn-header"></div>
+<div class="btn-header">Output Voltage</div>
+<div class="btn-header">Temperature</div>
+
+<div class="btn-header"></div>
+<div class="btn-header">(Volt)</div>
+<div class="btn-header">(°C)</div>
+
+    <!-- SENSOR ROWS -->
+    <div class="sensor-label">Sensor 1</div>
+<input type="text" readonly class="btn-box" id="t1_volt" oninput="updateTemperature(1)">
+<div class="btn-box" id="t1_temp"></div>
+
+<div class="sensor-label">Sensor 2</div>
+<input type="text" readonly class="btn-box" id="t2_volt" oninput="updateTemperature(2)">
+<div class="btn-box" id="t2_temp"></div>
+
+<div class="sensor-label">Sensor 3</div>
+<input type="text" readonly class="btn-box" id="t3_volt" oninput="updateTemperature(3)">
+<div class="btn-box" id="t3_temp"></div>
+
+<div class="sensor-label">Sensor 4</div>
+<input type="text" readonly class="btn-box" id="t4_volt" oninput="updateTemperature(4)">
+<div class="btn-box" id="t4_temp"></div>
+
+<div class="sensor-label">Sensor 5</div>
+<input type="text" readonly class="btn-box" id="t5_volt" oninput="updateTemperature(5)">
+<div class="btn-box" id="t5_temp"></div>
+
+</div>
+            </div>
+        </div>
+            </div>
+
+        </div>
+
+        <!-- CONTROL BUTTONS -->
+        <div class="top-buttons">
+
+    <button id="startBtn" onclick="startDevice()" class="start-btn">START</button>
+    <button id="stopBtn" onclick="stopDevice()" class="stop-btn">STOP</button>
+    <button id="resetBtn" onclick="resetDevice()" style="background-color:#6c757d;">RESET</button>
+
+</div>
+
+<!-- SAMPLING RATE (ABOVE PRESSURE GRAPH) -->
+<div style="width:90%; margin: 20px auto; display:flex; justify-content:space-between; align-items:center;">
+
+    <!-- LEFT: SENSOR FILTER CHECKBOXES -->
+    <div style="display:flex; gap:12px; align-items:center;">
+        <label style="font-weight:600;">Sensors:</label>
+
+        <label><input type="checkbox" checked onchange="toggleSensor(0, event)"> S1</label>
+        <label><input type="checkbox" checked onchange="toggleSensor(1, event)"> S2</label>
+        <label><input type="checkbox" checked onchange="toggleSensor(2, event)"> S3</label>
+        <label><input type="checkbox" checked onchange="toggleSensor(3, event)"> S4</label>
+        <label><input type="checkbox" checked onchange="toggleSensor(4, event)"> S5</label>
+    </div>
+
+    <!-- RIGHT: SAMPLING RATE (UNCHANGED FUNCTIONALITY) -->
+    <div style="display:flex; gap:10px; align-items:center;">
+        <label style="font-weight:600;">Sampling Rate:</label>
+
+        <select id="samplingRate" onchange="changeSamplingRate()" 
+            style="width: 120px; height: 40px; font-size: 14px; border-radius: 6px;">
+            <option value="1">1 sec</option>
+            <option value="5">5 sec</option>
+            <option value="10">10 sec</option>
+            <option value="30">30 sec</option>
+            <option value="60">60 sec</option>
+            <option value="120">120 sec</option>
+        </select>
+    </div>
+
+</div>
+
+<div style="width:90%; margin: 30px auto;">
+    <h3 style="text-align:center;">Pressure Graph</h3>
+    <canvas id="sensorChart"></canvas>
+</div>
+
+<div style="width:90%; margin: 30px auto;">
+    <h3 style="text-align:center;">Temperature Graph</h3>
+    <canvas id="temperatureChart"></canvas>
+</div>
+
+<div class="export-footer">
+    <button onclick="exportCSV()">Export Data</button>
+</div>
+
+    <script>
+const BASE_URL = "http://127.0.0.1:5000";
+
+let sensorChart;
+let temperatureChart;
+
+let displayCounter = 0;
+
+let isRunning = false;
+
+let samplingRateSec = 1;
+let dataInterval = null;
+
+let fetchInterval = null;
+let lastSampleId = -1;
+
+let lastPlottedSampleId = -1;
+
+// ---------------- CHART SETUP ----------------
+window.onload = function () {
+
+    // PRESSURE CHART
+    const ctx = document.getElementById('sensorChart').getContext('2d');
+    sensorChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [
+                { label: 'Sensor 1', borderColor: '#e41a1c', data: [], fill: false },
+                { label: 'Sensor 2', borderColor: '#377eb8', data: [], fill: false },
+                { label: 'Sensor 3', borderColor: '#4daf4a', data: [], fill: false },
+                { label: 'Sensor 4', borderColor: '#ff7f00', data: [], fill: false },
+                { label: 'Sensor 5', borderColor: '#984ea3', data: [], fill: false }
+            ]
+        },
+        options: {
+        responsive: true,
+        animation: false,
+
+        elements: {
+            line: {
+                tension: 0.2,
+                borderWidth: 3   // thicker lines
+            },
+            point: {
+                radius: 5,       // bigger dots
+                hoverRadius: 7
+            }
+        },
+
+        plugins: {
+            legend: {
+                position: 'top'
+            },
+            decimation: {
+                enabled: true,
+                algorithm: 'lttb',
+                samples: 500
+            }
+        },
+
+        scales: {
+            x: {
+                title: {
+                    display: true,
+                    text: "Sample Number"
+                },
+                grid: {
+                    display: true
+                }
+            },
+            y: {
+                title: {
+                    display: true,
+                    text: "Pressure (Psi)"
+                },
+                grid: {
+                    display: true
+                },
+
+                // 🔥 IMPORTANT: match tight range like your image
+                ticks: {
+                    stepSize: 2,
+                    callback: val => val + " psi"
+                }
+            }
+        }
+    }
+    });
+
+    // TEMPERATURE CHART
+    const tctx = document.getElementById('temperatureChart').getContext('2d');
+    temperatureChart = new Chart(tctx, {
+    type: 'line',
+    data: {
+        labels: [],
+        datasets: [
+            { label: 'Sensor 1', borderColor: '#e41a1c', data: [], fill: false },
+            { label: 'Sensor 2', borderColor: '#377eb8', data: [], fill: false },
+            { label: 'Sensor 3', borderColor: '#4daf4a', data: [], fill: false },
+            { label: 'Sensor 4', borderColor: '#ff7f00', data: [], fill: false },
+            { label: 'Sensor 5', borderColor: '#984ea3', data: [], fill: false }
+        ]
+    },
+    options: {
+        responsive: true,
+        animation: false,
+        elements: {
+            line: { tension: 0.2, borderWidth: 3 },
+            point: { radius: 5, hoverRadius: 7 }
+        },
+        plugins: {
+            legend: { position: 'top' },
+            decimation: {
+                enabled: true,
+                algorithm: 'lttb',
+                samples: 500
+            }
+        },
+        scales: {
+            x: {
+                title: { display: true, text: "Sample Number" }
+            },
+            y: {
+                title: {
+                    display: true,
+                    text: "Temperature (°C)"
+                },
+
+                // 🔥 FIXED RANGE (same style as pressure)
+
+                ticks: {
+                    stepSize: 5,
+                    callback: val => val + "°C"  // smooth readable steps
+                },
+
+                grid: {
+                    display: true
+                }
+            }
+        }
+    }
+});  // ✅ REQUIRED
+    
+    applySamplingRate();
+    restartFetchLoop();
+};
+
+// ---------------- FETCH DATA ----------------
+async function fetchData() {
+    try {
+        const res = await fetch(`${BASE_URL}/data`);
+        const data = await res.json();
+
+        // 🟢 AUTO RECONNECT DETECTION (USB plugged back)
+        // 🟢 AUTO CONNECT (USB plugged back properly)
+        if (data.status === "live" && isRunning) {
+            document.getElementById("pressure").innerText = "CONNECTED";
+            document.getElementById("temperature").innerText = "CONNECTED";
+
+            document.getElementById("pressure").style.color = "green";
+            document.getElementById("temperature").style.color = "green";
+        }
+
+        // 🔴 HANDLE DISCONNECTED / NO SIGNAL
+        if (data.status === "disconnected" || data.status === "no_data") {
+
+            let msg = (data.status === "disconnected") ? "DISCONNECTED" : "NO SIGNAL";
+
+            document.getElementById("pressure").innerText = msg;
+            document.getElementById("temperature").innerText = msg;
+
+            document.getElementById("pressure").style.color = "red";
+            document.getElementById("temperature").style.color = "red";
+
+            return;
+        }
+
+        if (data.status === "stopped") {
+            document.getElementById("pressure").innerText = "STOPPED";
+            document.getElementById("temperature").innerText = "STOPPED";
+
+            document.getElementById("pressure").style.color = "red";
+            document.getElementById("temperature").style.color = "red";
+        }
+        else if (data.status === "live") {
+            document.getElementById("pressure").innerText = data.pressure;
+            document.getElementById("temperature").innerText = data.temperature;
+
+            document.getElementById("pressure").style.color = "#1f2d3a";
+            document.getElementById("temperature").style.color = "#1f2d3a";
+        }
+
+        for (let i = 1; i <= 5; i++) {
+
+            // -------- UI UPDATE --------
+            let pVolt = data[`p${i}_volt`];
+            let tVolt = data[`t${i}_volt`];
+
+            document.getElementById(`p${i}_volt`).value =
+                (pVolt != null) ? Number(pVolt).toFixed(3) : "";
+
+            document.getElementById(`t${i}_volt`).value =
+                (tVolt != null) ? Number(tVolt).toFixed(3) : "";
+
+            updatePressure(i);
+            updateTemperature(i);
+        }
+
+        // -------- SAMPLE-SYNC GRAPH ENGINE (CSV = GRAPH) --------
+        if (isRunning && data.sample_id !== -1 && data.sample_id !== lastPlottedSampleId) {
+
+        lastPlottedSampleId = data.sample_id;
+
+        displayCounter++;
+        let label = displayCounter;
+
+        sensorChart.data.labels.push(label);
+        temperatureChart.data.labels.push(label);
+
+        for (let i = 1; i <= 5; i++) {
+
+            let psi = parseFloat(data[`p${i}_psi`]);
+            if (isNaN(psi)) psi = null;
+
+            let temp = parseFloat(data[`t${i}_temp`]);
+            if (isNaN(temp)) temp = null;
+
+            sensorChart.data.datasets[i - 1].data.push(psi);
+            temperatureChart.data.datasets[i - 1].data.push(temp);
+        }
+
+        // keep chart memory bounded
+        const MAX_POINTS = 10800; // 3 hours @ 1 sec
+
+        if (sensorChart.data.labels.length > MAX_POINTS) {
+            sensorChart.data.labels.shift();
+            temperatureChart.data.labels.shift();
+
+            sensorChart.data.datasets.forEach(ds => ds.data.shift());
+            temperatureChart.data.datasets.forEach(ds => ds.data.shift());
+        }
+
+        autoScaleYAxis(sensorChart);
+        autoScaleYAxis(temperatureChart);
+
+        sensorChart.update('none');
+        temperatureChart.update('none');
+    }
+
+    } catch (err) {
+    console.log("Fetch error:", err);
+
+    // 🔴 USB unplug / backend unreachable → mark as DISCONNECTED
+    document.getElementById("pressure").innerText = "DISCONNECTED";
+    document.getElementById("temperature").innerText = "DISCONNECTED";
+
+    document.getElementById("pressure").style.color = "red";
+    document.getElementById("temperature").style.color = "red";
+}
+}
+
+function toggleSensor(index, event) {
+    const checked = event.target.checked;
+
+    sensorChart.data.datasets[index].hidden = !checked;
+    temperatureChart.data.datasets[index].hidden = !checked;
+
+    sensorChart.update();
+    temperatureChart.update();
+}
+
+// ---------------- UPDATE FUNCTIONS ----------------
+function updatePressure(sensor) {
+    let volt = parseFloat(document.getElementById(`p${sensor}_volt`).value);
+
+    if (isNaN(volt)) {
+        document.getElementById(`p${sensor}_psi`).innerText = "";
+        return;
+    }
+
+    let psi = (4 * volt) + 5;
+    document.getElementById(`p${sensor}_psi`).innerText = psi.toFixed(2);
+}
+
+function updateTemperature(sensor) {
+    let volt = parseFloat(document.getElementById(`t${sensor}_volt`).value);
+
+    if (isNaN(volt)) {
+        document.getElementById(`t${sensor}_temp`).innerText = "";
+        return;
+    }
+
+    let temp = (8 * volt) + 10;
+    document.getElementById(`t${sensor}_temp`).innerText = temp.toFixed(2);
+}
+
+// ---------------- CONTROL ----------------
+async function startDevice() {
+    isRunning = true;
+
+    const rate = samplingRateSec;
+
+    await fetch(`${BASE_URL}/start`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            sampling_rate: rate
+        })
+    });
+
+    lastPlottedSampleId = -1;
+
+    await fetchData();   // 🔥 immediate first sync
+
+    setActiveButton("startBtn");
+}
+
+async function stopDevice() {
+    await fetch(`${BASE_URL}/stop`, { method: "POST" });
+
+    document.getElementById("pressure").innerText = "STOPPED";
+    document.getElementById("temperature").innerText = "STOPPED";
+
+    document.getElementById("pressure").style.color = "red";
+    document.getElementById("temperature").style.color = "red";
+
+    isRunning = false;
+    setActiveButton("stopBtn");
+}
+
+async function resetDevice() {
+    await fetch(`${BASE_URL}/reset`, { method: "POST" });
+
+    isRunning = false;
+    lastPlottedSampleId = -1;
+
+    displayCounter = 0;
+
+    document.getElementById("pressure").innerText = "RESET";
+    document.getElementById("temperature").innerText = "RESET";
+
+    document.getElementById("pressure").style.color = "red";
+    document.getElementById("temperature").style.color = "red";
+
+    sensorChart.data.labels = [];
+    temperatureChart.data.labels = [];
+
+    sensorChart.data.datasets.forEach(ds => ds.data = []);
+    temperatureChart.data.datasets.forEach(ds => ds.data = []);
+
+    sensorChart.update();
+    temperatureChart.update();
+
+    for (let i = 1; i <= 5; i++) {
+        document.getElementById(`p${i}_volt`).value = "";
+        document.getElementById(`p${i}_psi`).innerText = "";
+
+        document.getElementById(`t${i}_volt`).value = "";
+        document.getElementById(`t${i}_temp`).innerText = "";
+    }
+
+    setActiveButton("resetBtn");
+}
+
+// ---------------- EXPORT ----------------
+function exportCSV() {
+    window.location.href = `${BASE_URL}/download_csv`;
+}
+
+// ---------------- SAMPLING CONTROL ----------------
+function applySamplingRate() {
+    // no interval logic needed anymore
+}
+
+function autoScaleYAxis(chart) {
+    let allValues = [];
+
+    chart.data.datasets.forEach(ds => {
+        ds.data.forEach(v => {
+            if (v !== null && !isNaN(v)) {
+                allValues.push(v);
+            }
+        });
+    });
+
+    if (allValues.length === 0) return;
+
+    // allValues = allValues.filter(v => Number.isFinite(v));
+
+    let min = Math.min(...allValues);
+    let max = Math.max(...allValues);
+
+    // 🔥 FIX: prevent flat-line collapse
+    if (min === max) {
+        min -= 0.1;
+        max += 0.1;
+    }
+
+    let padding = (max - min) * 0.2; // zoom tightness
+
+    chart.options.scales.y.min = min - padding;
+    chart.options.scales.y.max = max + padding;
+}
+
+function restartFetchLoop() {
+    if (fetchInterval) {
+        clearInterval(fetchInterval);
+        fetchInterval = null;
+    }
+
+    fetchInterval = setInterval(fetchData, samplingRateSec * 1000);
+}
+
+// ---------------- HELPER FUNCTIONS ----------------
+function setActiveButton(activeId) {
+    const buttons = ["startBtn", "stopBtn", "resetBtn"];
+
+    buttons.forEach(id => {
+        document.getElementById(id).classList.remove("active-btn");
+    });
+
+    document.getElementById(activeId).classList.add("active-btn");
+}
+
+async function changeSamplingRate() {
+    samplingRateSec = parseInt(document.getElementById("samplingRate").value);
+
+    try {
+        const res = await fetch(`${BASE_URL}/set_sampling_rate`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                sampling_rate: samplingRateSec
+            })
+        });
+
+        const data = await res.json();
+
+        if (data.status === "ok") {
+            console.log("Sampling changed to", data.sampling_rate, "sec");
+
+            restartFetchLoop();
+        } else {
+            alert("Sampling rate update failed");
+        }
+
+    } catch (err) {
+        alert("Backend not reachable for sampling update");
+    }
+}
+
+// ---------------- CONNECT ----------------
+async function connectDevice() {
+    try {
+        const port = document.getElementById("comPort").value;
+        const baud = document.getElementById("baudRate").value;
+
+        const res = await fetch(`${BASE_URL}/connect`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                com_port: port,
+                baud_rate: baud
+            })
+        });
+
+        const data = await res.json();
+
+        if (data.status === "connected") {
+            alert("Device Connected ✅");
+
+            document.getElementById("pressure").innerText = "CONNECTED";
+            document.getElementById("temperature").innerText = "CONNECTED";
+
+            document.getElementById("pressure").style.color = "green";
+            document.getElementById("temperature").style.color = "green";
+
+            isRunning = false;
+        } else {
+            alert("❌ " + data.message);
+        }
+
+    } catch {
+        alert("Backend not reachable ❌");
+    }
+}
+
+// ---------------- AUTO FETCH ----------------
+
+</script>
+
+<footer class="footer">
+    <div class="footer-center">
+        Packaging and Systems Facility (PASF)
+    </div>
+
+    <div class="footer-right">
+
+    <img src="images/phone.png" alt="Phone">
+    <span>+91 8812013021</span>
+
+        <a href="https://cense.iisc.ac.in" target="_blank">
+            <img src="images/web.png" alt="Website" class="footer-icon">
+        </a>
+    </div>
+</footer>
+
+</body>
+</html>
